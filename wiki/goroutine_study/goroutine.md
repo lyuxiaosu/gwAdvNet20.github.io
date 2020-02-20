@@ -101,7 +101,9 @@ There are 4 types of events that can give Goroutine scheduler an opportunity to 
  
  ![](5.png)
 
-
+ ### Synchronous System Calls
+  What if a Goroutine makes some system calls that are not be done asynchronously? For example, reading a file to memory is a synchronous system call. In this situation, event poller cannot be used for handling synchronous system calls, so this Goroutine will block the current thread. However, such situations cannot be prevented, but do we have solutions for this case? When this happened, the scheduler will detach the current thread with the blocked Goroutine attached from the current CPU core, and bring a new thread to service the current CPU core. The new thread can be some previous existing swapped thread or a new thread created by the Go runtime. When the blocked Goroutine finishes its synchronous calling, it will be moved back to the queue waiting for the next running. In this scenario, a real thread context-switching will happened once, however, other Goroutines are not blocked by the synchronous calls and still can be processed. See the following image:
+  
 
  
 
